@@ -7,6 +7,7 @@ import (
     "io/ioutil"
     "strconv"
     // "path/filepath"
+    "github.com/POC1/poc_1/util"
     )
 
 // type Students struct {
@@ -42,6 +43,14 @@ func check_file_path(input_path_json string) bool{
 }
 
 func main() {
+
+    // Reading variable from config file
+    config, err := util.LoadConfig(".")
+    if err != nil {
+        // log.Fatal("Cannot load config: ", err)
+        fmt.Println("Cannot load config: ", err)
+    }
+    fmt.Println(config.ELASTICSEARCH_URL)
 
     fmt.Println("Enter file path: ")
     var input_path_json string
