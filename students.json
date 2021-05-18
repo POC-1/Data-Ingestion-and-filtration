@@ -1,0 +1,45 @@
+ { "students" : [
+     {
+ "name": "Rahul",
+ "id": 123,
+ "address": {
+ "street": "Senapati Bapat Road",
+ "houseno": 1,
+ "city": "Pune"
+ },
+ "dept": "Computer Science",
+ "contact": {
+ "primary": 9100000000,
+ "secondary": 910000010
+ }
+ },
+{
+ "name": "Samir",
+ "id": 124,
+ "address": {
+ "street": "Gandhi Road",
+ "houseno": 1,
+ "city": "Ahmedabad"
+ },
+ "dept": "Computer Application",
+ "contact": {
+ "primary": 9100000001,
+ "secondary": 910000011
+ }
+},
+{
+ "name": "Julie",
+ "id": 125,
+ "address": {
+ "street": "xyz stree",
+ "houseno": 5,
+ "city": "Puned"
+ },
+ "dept": "Computer Technology",
+ "contact": {
+ "primary": 9100000003,
+ "secondary": 910000041
+ }
+ }
+]
+ }
