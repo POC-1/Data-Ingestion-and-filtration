@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
+
+	elastic_search "github.com/elastic/go-elasticsearch/v7"
+	elastic "github.com/olivere/elastic/v7"
 )
 
 type Students struct {
@@ -29,6 +34,32 @@ type Contact struct {
 	Primary   int `json:"primary"`
 	Secondary int `json:"secondary"`
 }
+
+// Mapping and index name. Elasticsearch index doctypes now deprecated
+const (
+	index    = "students"
+	mappings = `
+	{
+	"settings":{
+	"number_of_shards":2,
+	"number_of_replicas":1
+	},
+	"mappings":{
+	"properties":{
+	"field str":{
+	"type":"text"
+	},
+	"field int":{
+	"type":"integer"
+	},
+	"field bool":{
+	"type":"boolean"
+	}
+	}
+	}
+	}
+	`
+)
 
 func main() {
 	var filePath string
@@ -67,5 +98,52 @@ func main() {
 		fmt.Println("Secondary : " + strconv.Itoa(students.Students[i].Contact.Secondary))
 		fmt.Println()
 	}
+
+	//SetClient()
+	ctx := context.Background()
+	esclient, err := GetESClient()
+	if err != nil {
+		fmt.Println("Error initializing : ", err)
+		panic("Client fail ")
+	}
+	js := string(byteValue)
+	ind, err := esclient.Index().
+		Index("students").
+		BodyJson(js).
+		Do(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("[Elastic][InsertProduct]Insertion Successful" + ind.Index)
+
+}
+
+func SetClient() {
+	es, err := elastic_search.NewDefaultClient()
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
+
+	res, err := es.Info()
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+
+	defer res.Body.Close()
+	log.Println(res)
+
+}
+
+func GetESClient() (*elastic.Client, error) {
+
+	client, err := elastic.NewClient(elastic.SetURL("http://localhost:9200"),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false))
+
+	fmt.Println("ES initialized...")
+
+	return client, err
 
 }
