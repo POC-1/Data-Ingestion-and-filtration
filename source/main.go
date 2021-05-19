@@ -35,32 +35,6 @@ type Contact struct {
 	Secondary int `json:"secondary"`
 }
 
-// Mapping and index name. Elasticsearch index doctypes now deprecated
-const (
-	index    = "students"
-	mappings = `
-	{
-	"settings":{
-	"number_of_shards":2,
-	"number_of_replicas":1
-	},
-	"mappings":{
-	"properties":{
-	"field str":{
-	"type":"text"
-	},
-	"field int":{
-	"type":"integer"
-	},
-	"field bool":{
-	"type":"boolean"
-	}
-	}
-	}
-	}
-	`
-)
-
 func main() {
 	var filePath string
 	fmt.Println("Enter json file path :")
