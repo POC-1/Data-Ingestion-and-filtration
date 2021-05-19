@@ -1,4 +1,4 @@
-package main
+package main 
 
 import (
     "fmt"
@@ -8,11 +8,14 @@ import (
     "strconv"
     // "path/filepath"
     "github.com/POC1/poc_1/util"
+    elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
     )
 
 // type Students struct {
 //     Student []Student 
 // }
+
+
 
 type Student struct {
     Name        string  `json:"name"`
@@ -43,6 +46,23 @@ func check_file_path(input_path_json string) bool{
 }
 
 func main() {
+
+    es, _ := elasticsearch7.NewDefaultClient()
+    fmt.Println(elasticsearch7.Version)
+    fmt.Println(es.Info())
+
+    es, err := elasticsearch7.NewDefaultClient()
+    if err != nil {
+    fmt.Printf("Error creating the client: %s", err)
+    }
+
+    res, err := es.Info()
+    if err != nil {
+    fmt.Printf("Error getting response: %s", err)
+    }
+
+    defer res.Body.Close()
+    fmt.Println(res)
 
     // Reading variable from config file
     config, err := util.LoadConfig(".")
