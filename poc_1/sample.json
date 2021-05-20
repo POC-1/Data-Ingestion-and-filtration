@@ -40,6 +40,48 @@
     "primary": 9100000003,
     "secondary": 910000041
     }
+    },
+    {
+        "name": "Tushar",
+        "id": 126,
+        "address": {
+        "street": "Lambda market",
+        "houseno": 21,
+        "city": "Pune"
+        },
+        "dept": "Computer Technology",
+        "contact": {
+        "primary": 9100003003,
+        "secondary": 910400041
+        }
+    },
+    {
+        "name": "Himali",
+        "id": 127,
+        "address": {
+        "street": "ORM street",
+        "houseno": 2,
+        "city": "Mumbai"
+        },
+        "dept": "Computer Application",
+        "contact": {
+        "primary": 9100100003,
+        "secondary": 913000041
+        }
+    },
+    {
+        "name": "Akshar",
+        "id": 128,
+        "address": {
+        "street": "Vijay nagar",
+        "houseno": 12,
+        "city": "Mumbai"
+        },
+        "dept": "Computer Engineering",
+        "contact": {
+        "primary": 9100103003,
+        "secondary": 9130440041
+        }
     }
 
 ]

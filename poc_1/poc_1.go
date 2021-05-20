@@ -6,9 +6,14 @@ import (
     "encoding/json"
     "io/ioutil"
     "strconv"
+    "log"
     // "path/filepath"
     "github.com/POC1/poc_1/util"
     elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
+    "github.com/elastic/go-elasticsearch/v7/esapi"
+    "context"
+    "reflect"
+    "strings"
     )
 
 // type Students struct {
@@ -47,30 +52,48 @@ func check_file_path(input_path_json string) bool{
 
 func main() {
 
-    es, _ := elasticsearch7.NewDefaultClient()
-    fmt.Println(elasticsearch7.Version)
-    fmt.Println(es.Info())
-
-    es, err := elasticsearch7.NewDefaultClient()
-    if err != nil {
-    fmt.Printf("Error creating the client: %s", err)
-    }
-
-    res, err := es.Info()
-    if err != nil {
-    fmt.Printf("Error getting response: %s", err)
-    }
-
-    defer res.Body.Close()
-    fmt.Println(res)
-
-    // Reading variable from config file
+    // Load Config variables
     config, err := util.LoadConfig(".")
     if err != nil {
         // log.Fatal("Cannot load config: ", err)
         fmt.Println("Cannot load config: ", err)
     }
-    fmt.Println(config.ELASTICSEARCH_URL)
+
+    // Create a context object for the API calls
+    ctx := context.Background()
+
+    // Create a mapping for the Elasticsearch documents
+    var (
+        docMap map[string]interface{}
+    )
+    fmt.Println("docMap:", docMap)
+    fmt.Println("docMap TYPE:", reflect.TypeOf(docMap))
+
+    // Declare an Elasticsearch configuration
+    cfg := elasticsearch7.Config{
+        Addresses: []string{
+            config.ELASTICSEARCH_URL,
+        },
+        // Username: config.USERNAME,
+        // Password: config.PASSWORD,
+    }
+
+    // Instantiate a new Elasticsearch client object instance
+    client, err := elasticsearch7.NewClient(cfg)
+
+    if err != nil {
+        fmt.Println("Elasticsearch connection error:", err)
+    }
+
+    // Have the client instance return a response
+    res, err := client.Info()
+
+    // Deserialize the response into a map.
+    if err != nil {
+        log.Fatalf("client.Info() ERROR:", err)
+    } else {
+        log.Printf("client response:", res)
+    }
 
     fmt.Println("Enter file path: ")
     var input_path_json string
@@ -78,23 +101,11 @@ func main() {
     fmt.Scanln(&input_path_json)
     fmt.Print("path for the file : " + input_path_json + "\n")
 
-    // get extension for the file
-    // if check_file_path(input_path_json) {
-    //     println("Checking if its JSON..")
-    // }
-
     jsonData, err := os.Open(input_path_json)
     if err!= nil {
         fmt.Println(err)
         os.Exit(3)
     }
-
-    // extension := filepath.Ext(input_path_json)
-    // if extension != ".json" {
-    //     fmt.Println("\nCan't proceed, Extension of file is different! ", extension)
-    // }
-    
-   
     
     defer jsonData.Close()
 
@@ -121,6 +132,61 @@ func main() {
         fmt.Println()
     }
 
-}
+    // Declare empty array for the document strings
+    var docs []string
 
-// C:/Users/admin/Desktop/poc1/poc_1/sample.json
+    for i := 0; i < len(students); i++ {
+        // Marshal the struct to JSON and check for errors
+        b, err := json.Marshal(students[i])
+        if err != nil {
+            fmt.Println("json.Marshal ERROR:", err)
+            // string(err.Error())
+        }
+        
+        docs = append(docs, string(b))
+    }
+
+    for i, bod := range docs {
+
+        fmt.Println("\nDOC _id:", i+1)
+        fmt.Println(bod)
+
+        // Instantiate a request object
+        req := esapi.IndexRequest{
+            Index:      "poc_one_t",
+            DocumentID: strconv.Itoa(i + 1),
+            Body:       strings.NewReader(bod),
+            Refresh:    "true",
+        }
+        fmt.Println(reflect.TypeOf(req))
+
+        // Return an API response object from request
+        res, err := req.Do(ctx, client)
+        if err != nil {
+            log.Fatalf("IndexRequest ERROR: %s", err)
+        }
+        defer res.Body.Close()
+        fmt.Printf("res val %s", res)
+        if res.IsError() {
+            log.Printf("%s ERROR indexing document ID=%d", res.Status(), i+1)
+        } else {
+
+            // Deserialize the response into a map.
+            var resMap map[string]interface{}
+            if err := json.NewDecoder(res.Body).Decode(&resMap); err != nil {
+                log.Printf("Error parsing the response body: %s", err)
+            } else {
+                log.Printf("\nIndexRequest() RESPONSE:")
+                // Print the response status and indexed document version.
+                fmt.Println("Status:", res.Status())
+                fmt.Println("Result:", resMap["result"])
+                fmt.Println("Version:", int(resMap["_version"].(float64)))
+                fmt.Println("resMap:", resMap)
+                fmt.Println()
+         
+        }
+    }
+
+    
+    }      
+}

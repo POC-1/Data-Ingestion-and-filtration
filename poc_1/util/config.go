@@ -6,7 +6,10 @@ import (
 
 type Config struct {
 	ELASTICSEARCH_URL string `mapstructure:"ELASTICSEARCH_URL"`
+	USERNAME string `mapstructure:"USERNAME"`
+	PASSWORD string `mapstructure:"PASSWORD"`
 }
+
 
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)	
