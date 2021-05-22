@@ -2,18 +2,18 @@ package main
 
 import (
     "fmt"
-    "os"
-    "encoding/json"
-    "io/ioutil"
-    "strconv"
-    "log"
+	"os"
+	"bytes"
+	"log"
+	"encoding/json"
     // "path/filepath"
     "github.com/POC1/poc_1/util"
     elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
-    "github.com/elastic/go-elasticsearch/v7/esapi"
+    // "github.com/elastic/go-elasticsearch/v7/esapi"
     "context"
     "reflect"
-    "strings"
+	"strings"
+	"strconv"
     )
 
 // type Students struct {
@@ -50,7 +50,45 @@ func check_file_path(input_path_json string) bool{
     return true
 }
 
+func constructQuery(q string, size int) *strings.Reader {
+
+	// Build a query string from string passed to function
+	var query = `{"query": {`
+	
+	// Concatenate query string with string passed to method call
+	query = query + q
+	
+	// Use the strconv.Itoa() method to convert int to string
+	query = query + `}, "size": ` + strconv.Itoa(size) + `}`
+	fmt.Println("\nquery:", query)
+	
+	// Check for JSON errors
+	isValid := json.Valid([]byte(query)) // returns bool
+	
+	// Default query is "{}" if JSON is invalid
+	if isValid == false {
+	fmt.Println("constructQuery() ERROR: query string not valid:", query)
+	fmt.Println("Using default match_all query")
+	query = "{}"
+	} else {
+	fmt.Println("constructQuery() valid JSON:", isValid)
+	}
+		
+	// Build a new string from JSON query
+	var b strings.Builder
+	b.WriteString(query)
+
+	// Instantiate a *strings.Reader object from string
+	read := strings.NewReader(b.String())
+
+	// Return a *strings.Reader object
+	return read
+	}
+
 func main() {
+
+	// Allow for custom formatting of log output
+	log.SetFlags(0)
 
     // Load Config variables
     config, err := util.LoadConfig(".")
@@ -61,13 +99,6 @@ func main() {
 
     // Create a context object for the API calls
     ctx := context.Background()
-
-    // Create a mapping for the Elasticsearch documents
-    var (
-        docMap map[string]interface{}
-    )
-    fmt.Println("docMap:", docMap)
-    fmt.Println("docMap TYPE:", reflect.TypeOf(docMap))
 
     // Declare an Elasticsearch configuration
     cfg := elasticsearch7.Config{
@@ -95,98 +126,83 @@ func main() {
         log.Printf("client response:", res)
     }
 
-    fmt.Println("Enter file path: ")
-    var input_path_json string
+	// Instantiate a mapping interface for API response
+	var mapResp map[string]interface{}
 
-    fmt.Scanln(&input_path_json)
-    fmt.Print("path for the file : " + input_path_json + "\n")
+	// Build the request body.
+	var buf bytes.Buffer
+	
+	
+	// Getting all at once
+	// query = `{"query": {"match_all" : {}},"size": 6}`
 
-    jsonData, err := os.Open(input_path_json)
-    if err!= nil {
-        fmt.Println(err)
-        os.Exit(3)
-    }
-    
-    defer jsonData.Close()
+	// Filter students belonging to a a city,"Pune"
+	// var query = `{"query": {"match" : {"address": {"city": "Pune"}}},"size": 10}`
 
-    byteValue, _ := ioutil.ReadAll(jsonData)
+	// Filter students with dept as "Computer Science"
 
-    if !json.Valid(byteValue) {
-		fmt.Println("Json file invalid")
-		os.Exit(3)
-    }
+	// Filter students with dept as "Computer Application"
 
-    var students []Student
+	// Filter students with dept containing "Computer"
+	var query = `{"query": {"match" : {"dept": "Computer"}},"size": 10}`
 
-    json.Unmarshal(byteValue, &students)
+	read := constructQuery(query, 10)
 
-    for i := 0; i < len(students); i++ {
-        fmt.Println("\nStudent Name: " + students[i].Name)
-        fmt.Println("Student Id: " + strconv.Itoa(students[i].Id))
-        fmt.Println("Student Address street: " + students[i].Address.Street)
-        fmt.Println("Student Address house no: " + strconv.Itoa(students[i].Address.Houseno))
-        fmt.Println("Student Address city: " + students[i].Address.City)
-        fmt.Println("Student Dept: " + students[i].Dept)
-        fmt.Println("Student Contact Primary: " + strconv.Itoa(students[i].Contact.Primary))
-        fmt.Println("Student Contact Secondary: " + strconv.Itoa(students[i].Contact.Secondary))
-        fmt.Println()
-    }
+	// fmt.Println("read:", read)
+	fmt.Println("read TYPE:", reflect.TypeOf(read))
+	// fmt.Println("JSON encoding:", json.NewEncoder(&buf).Encode(read))
 
-    // Declare empty array for the document strings
-    var docs []string
+	// Attempt to encode the JSON query and look for errors
+	if err := json.NewEncoder(&buf).Encode(read); err != nil {
+	log.Fatalf("Error encoding query: %s", err)
 
-    for i := 0; i < len(students); i++ {
-        // Marshal the struct to JSON and check for errors
-        b, err := json.Marshal(students[i])
-        if err != nil {
-            fmt.Println("json.Marshal ERROR:", err)
-            // string(err.Error())
-        }
-        
-        docs = append(docs, string(b))
-    }
+	// Query is a valid JSON object
+	} else {
+		fmt.Println("json.NewEncoder encoded query:", read, "\n")
 
-    for i, bod := range docs {
+		// Pass the JSON query to the Golang client's Search() method
+		res, err := client.Search(
+		client.Search.WithContext(ctx),
+		client.Search.WithIndex("poc_one_t"),
+		client.Search.WithBody(read),
+		client.Search.WithTrackTotalHits(true),
+		client.Search.WithPretty(),
+		)
 
-        fmt.Println("\nDOC _id:", i+1)
-        fmt.Println(bod)
+		// Check for any errors returned by API call to Elasticsearch
+		if err != nil {
+		log.Fatalf("Elasticsearch Search() API ERROR:", err)
+		
+		// If no errors are returned, parse esapi.Response object
+		} else {
+		fmt.Println("res TYPE:", reflect.TypeOf(res))
+		
+		// Close the result body when the function call is complete
+		defer res.Body.Close()
 
-        // Instantiate a request object
-        req := esapi.IndexRequest{
-            Index:      "poc_one_t",
-            DocumentID: strconv.Itoa(i + 1),
-            Body:       strings.NewReader(bod),
-            Refresh:    "true",
-        }
-        fmt.Println(reflect.TypeOf(req))
+		// Decode the JSON response and using a pointer
+		if err := json.NewDecoder(res.Body).Decode(&mapResp); err == nil {
+		fmt.Println(`&mapResp:`, &mapResp, "\n")
+		// fmt.Println(`mapResp["hits"]:`, mapResp["hits"])
 
-        // Return an API response object from request
-        res, err := req.Do(ctx, client)
-        if err != nil {
-            log.Fatalf("IndexRequest ERROR: %s", err)
-        }
-        defer res.Body.Close()
-        fmt.Printf("res val %s", res)
-        if res.IsError() {
-            log.Printf("%s ERROR indexing document ID=%d", res.Status(), i+1)
-        } else {
+		// Iterate the document "hits" returned by API call
+		for _, hit := range mapResp["hits"].(map[string]interface{})["hits"].([]interface{}) {
 
-            // Deserialize the response into a map.
-            var resMap map[string]interface{}
-            if err := json.NewDecoder(res.Body).Decode(&resMap); err != nil {
-                log.Printf("Error parsing the response body: %s", err)
-            } else {
-                log.Printf("\nIndexRequest() RESPONSE:")
-                // Print the response status and indexed document version.
-                fmt.Println("Status:", res.Status())
-                fmt.Println("Result:", resMap["result"])
-                fmt.Println("Version:", int(resMap["_version"].(float64)))
-                fmt.Println("resMap:", resMap)
-                fmt.Println()
-         
-        }
-    }
-
-    
-    }      
+			// Parse the attributes/fields of the document
+			doc := hit.(map[string]interface{})
+			
+			// The "_source" data is another map interface nested inside of doc
+			source := doc["_source"]
+			fmt.Println("doc _source:", reflect.TypeOf(source))
+			
+			// Get the document's _id and print it out along with _source data
+			docID := doc["_id"]
+			fmt.Println("docID:", docID)
+			fmt.Println("_source:", source, "\n")
+		} // end of response iteration
+			
+		}
+		}
+	}
+		
 }
