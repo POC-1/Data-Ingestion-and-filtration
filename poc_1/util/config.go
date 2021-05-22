@@ -10,7 +10,6 @@ type Config struct {
 	PASSWORD string `mapstructure:"PASSWORD"`
 }
 
-
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)	
 	viper.SetConfigName("app")
