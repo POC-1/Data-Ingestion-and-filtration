@@ -9,6 +9,7 @@ import (
     "log"
     // "path/filepath"
     "github.com/POC1/poc_1/util"
+
     elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
     "github.com/elastic/go-elasticsearch/v7/esapi"
     "context"
@@ -95,6 +96,7 @@ func main() {
         log.Printf("client response:", res)
     }
 
+    
     // Get file path from user 
     fmt.Println("Enter file path: ")
     var input_path_json string
@@ -117,6 +119,8 @@ func main() {
 		fmt.Println("Json file invalid")
 		os.Exit(3)
     }
+
+
 
     var students []Student
 

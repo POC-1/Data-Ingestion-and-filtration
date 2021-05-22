@@ -16,11 +16,6 @@ import (
 	"strconv"
     )
 
-// type Students struct {
-//     Student []Student 
-// }
-
-
 
 type Student struct {
     Name        string  `json:"name"`
@@ -50,10 +45,10 @@ func check_file_path(input_path_json string) bool{
     return true
 }
 
-func constructQuery(q string, size int) *strings.Reader {
+func constructQuery(q string, size int, score int) *strings.Reader {
 
 	// Build a query string from string passed to function
-	var query = `{"query": {`
+	var query = `{"min_score":` + strconv.Itoa(score) + `, "query": {`
 	
 	// Concatenate query string with string passed to method call
 	query = query + q
@@ -83,6 +78,50 @@ func constructQuery(q string, size int) *strings.Reader {
 
 	// Return a *strings.Reader object
 	return read
+	}
+
+	func constructNestedQuery() *strings.Reader {
+
+		// Build a query string from string passed to function
+		var query = `{
+			"query": {
+			  "nested": {
+				"path": "address",
+				"query": {
+				  "bool": {
+					"must": [
+					  { "match": { "address.city": "Pune" } }
+					]
+				  }
+				},
+				"score_mode": "avg"
+			  }
+			}
+		  }`
+
+		fmt.Println("\nquery:", query)
+		
+		// Check for JSON errors
+		isValid := json.Valid([]byte(query)) // returns bool
+		
+		// Default query is "{}" if JSON is invalid
+		if isValid == false {
+		fmt.Println("constructQuery() ERROR: query string not valid:", query)
+		fmt.Println("Using default match_all query")
+		query = "{}"
+		} else {
+		fmt.Println("constructQuery() valid JSON:", isValid)
+		}
+			
+		// Build a new string from JSON query
+		var b strings.Builder
+		b.WriteString(query)
+	
+		// Instantiate a *strings.Reader object from string
+		read := strings.NewReader(b.String())
+	
+		// Return a *strings.Reader object
+		return read
 	}
 
 func main() {
@@ -126,27 +165,62 @@ func main() {
         log.Printf("client response:", res)
     }
 
+
+	 // Get file path from user 
+	 fmt.Println("Enter Your Choice: \n1. Filter students belonging to a a city,'Pune' \n2. Filter students with dept as 'Computer Science' \n3. Filter students with dept as 'Computer Application' \n4. Filter students with dept containing 'Computer' ")
+	 var input_query_type int
+ 
+	 fmt.Scanln(&input_query_type)
+	 fmt.Print("Query selected : " + strconv.Itoa(input_query_type) + "\n")
+
+
+	var query = ``
+	var score = 1
+	read := strings.NewReader("")
+	switch input_query_type {
+    case 1:
+        query = `"match" : {"dept": "Computer Science"}`
+		read = constructNestedQuery()
+	case 2:
+		fmt.Println("Enter no of allowed documents to get: ")
+		var size_expected int
+		fmt.Scanln(&size_expected)
+		fmt.Print("Query selected : " + strconv.Itoa(size_expected) + "\n")
+
+        query = `"match" : {"dept": "Computer Science"}`
+		score = 1
+		read = constructQuery(query, size_expected, score)
+	case 3:
+		fmt.Println("Enter no of allowed documents to get: ")
+		var size_expected int
+		fmt.Scanln(&size_expected)
+		fmt.Print("Query selected : " + strconv.Itoa(size_expected) + "\n")
+
+		query = `"match" : {"dept": "Computer Application"}`
+		score = 1
+		read = constructQuery(query, size_expected, score)
+	case 4:
+		fmt.Println("Enter no of allowed documents to get: ")
+		var size_expected int
+		fmt.Scanln(&size_expected)
+		fmt.Print("Query selected : " + strconv.Itoa(size_expected) + "\n")
+
+		query = `"match" : {"dept": "Computer"}`
+		score = 0
+		read = constructQuery(query, size_expected, score)
+	default:
+		fmt.Print("Wrong Input, Printing default i.e 2")
+        os.Exit(3)
+	}
+	
 	// Instantiate a mapping interface for API response
 	var mapResp map[string]interface{}
 
 	// Build the request body.
 	var buf bytes.Buffer
 	
-	
-	// Getting all at once
-	// query = `{"query": {"match_all" : {}},"size": 6}`
+	// size = size_expected
 
-	// Filter students belonging to a a city,"Pune"
-	// var query = `{"query": {"match" : {"address": {"city": "Pune"}}},"size": 10}`
-
-	// Filter students with dept as "Computer Science"
-
-	// Filter students with dept as "Computer Application"
-
-	// Filter students with dept containing "Computer"
-	var query = `{"query": {"match" : {"dept": "Computer"}},"size": 10}`
-
-	read := constructQuery(query, 10)
 
 	// fmt.Println("read:", read)
 	fmt.Println("read TYPE:", reflect.TypeOf(read))
@@ -158,7 +232,8 @@ func main() {
 
 	// Query is a valid JSON object
 	} else {
-		fmt.Println("json.NewEncoder encoded query:", read, "\n")
+		fmt.Println("json.NewEncoder encoded query:", read)
+		fmt.Println()
 
 		// Pass the JSON query to the Golang client's Search() method
 		res, err := client.Search(
@@ -182,7 +257,7 @@ func main() {
 
 		// Decode the JSON response and using a pointer
 		if err := json.NewDecoder(res.Body).Decode(&mapResp); err == nil {
-		fmt.Println(`&mapResp:`, &mapResp, "\n")
+		// fmt.Println(`&mapResp:`, &mapResp, "\n")
 		// fmt.Println(`mapResp["hits"]:`, mapResp["hits"])
 
 		// Iterate the document "hits" returned by API call
@@ -198,7 +273,8 @@ func main() {
 			// Get the document's _id and print it out along with _source data
 			docID := doc["_id"]
 			fmt.Println("docID:", docID)
-			fmt.Println("_source:", source, "\n")
+			fmt.Println("_source:", source)
+			fmt.Println()
 		} // end of response iteration
 			
 		}
