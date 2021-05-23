@@ -8,6 +8,7 @@ type Config struct {
 	ELASTICSEARCH_URL string `mapstructure:"ELASTICSEARCH_URL"`
 	USERNAME string `mapstructure:"USERNAME"`
 	PASSWORD string `mapstructure:"PASSWORD"`
+	INDEX_NAME string `mapstructure:"INDEX_NAME"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

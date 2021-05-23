@@ -5,35 +5,33 @@ import (
 	"os"
 	"log"
 	"github.com/POC1/poc_1/query_helper"
+	"github.com/POC1/poc_1/read_insert"
+	"github.com/POC1/poc_1/models"
     "reflect"
 	"strings"
 	"strconv"
+	"encoding/json"
     )
-
-
-type Student struct {
-    Name        string  `json:"name"`
-    Id          int  `json:"id"`
-    Address     Address `json:"address"`
-    Dept        string  `json:"dept"`
-    Contact     Contact `json:"contact"`
-}
-
-type Address struct{
-    Street        string  `json:"street"`
-    Houseno       int  `json:"houseno"`
-    City          string  `json:"city"`
-}
-
-type Contact struct{
-    Primary        int  `json:"primary"`
-    Secondary      int  `json:"secondary"`
-}
 
 func main() {
 
 	// Allow for custom formatting of log output
 	log.SetFlags(0)
+
+	// Get file path from user and check if it is json
+	byteValue := read_insert.Getfilejson()
+
+	var students []models.Student
+    json.Unmarshal(byteValue, &students)
+
+	// Print the data from json 
+	read_insert.Printstudents_docs(students)
+
+	// Get a string array from JSON data
+	docs:= read_insert.Getdata_array(students)
+
+	// Insert data in elasticsearch
+	read_insert.Insert_data(docs)
 
 	// Get query choice
 	fmt.Println("Enter Your Choice: \n1. Filter students belonging to a city,'Pune' \n2. Filter students with dept as 'Computer Science' \n3. Filter students with dept as 'Computer Application' \n4. Filter students with dept containing 'Computer' ")
@@ -72,7 +70,5 @@ func main() {
 
 	// Call Query Function
 	query_helper.Makequery(read)
-
-	
 		
 }

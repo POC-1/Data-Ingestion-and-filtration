@@ -69,7 +69,7 @@ func Makequery(read *strings.Reader) {
 		// Pass the JSON query to the Golang client's Search() method
 		res, err := client.Search(
 			client.Search.WithContext(ctx),
-			client.Search.WithIndex("poc_one_t"),
+			client.Search.WithIndex(config.INDEX_NAME),
 			client.Search.WithBody(read),
 			client.Search.WithTrackTotalHits(true),
 			client.Search.WithPretty(),
