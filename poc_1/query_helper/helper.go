@@ -7,6 +7,7 @@ import (
 	"strconv"
 	)
 	
+// Asks for size of documents to get as result
 func Get_resultsize() int{
 	fmt.Println("Enter no of allowed documents to get: ")
 	var size_expected int
@@ -15,6 +16,7 @@ func Get_resultsize() int{
 	return size_expected
 }
 
+// Converts query string to strings.Reader
 func makeReader(query string) *strings.Reader {
 	// Build a new string from JSON query
 	var b strings.Builder
@@ -27,6 +29,7 @@ func makeReader(query string) *strings.Reader {
 	return read
 }
 
+// Constructs query for case 2, 3, 4
 func ConstructQuery(q string, size int, score int) *strings.Reader {
 
 	// Build a query string from string passed to function
@@ -54,6 +57,7 @@ func ConstructQuery(q string, size int, score int) *strings.Reader {
 	return makeReader(query)
 }
 
+// Constructs query for case 1
 func ConstructNestedQuery() *strings.Reader {
 
 		// Build a query string from string passed to function

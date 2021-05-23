@@ -11,6 +11,7 @@ type Config struct {
 	INDEX_NAME string `mapstructure:"INDEX_NAME"`
 }
 
+// declaring config funct so as to access the variables anywhere
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)	
 	viper.SetConfigName("app")

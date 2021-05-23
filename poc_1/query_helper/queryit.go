@@ -13,6 +13,7 @@ import (
 	"strings"
 	)
 
+// Logic for querying in elasticsearch
 func Makequery(read *strings.Reader) {
 
 	// Load Config variables

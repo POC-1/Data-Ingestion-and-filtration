@@ -9,6 +9,7 @@ import (
     "strconv"
 	)
 	
+// convert json file data to byte[]
 func Getfilejson() []byte {
 	fmt.Println("Enter file path: ")
 	var input_path_json string
@@ -33,6 +34,7 @@ func Getfilejson() []byte {
 	return byteValue
 }
 
+// Print data converted to struct from json file 
 func Printstudents_docs(students []models.Student) {
 	// Print student data
 	for i := 0; i < len(students); i++ {
@@ -48,6 +50,7 @@ func Printstudents_docs(students []models.Student) {
 	}
 }
 
+// Makes String array of all the struct records to make it able to insert in elastic
 func Getdata_array(students []models.Student) []string{
 
 	// Declare empty array for the document strings

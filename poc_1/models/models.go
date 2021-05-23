@@ -1,5 +1,6 @@
 package models
 
+// Structure of the data to be extracted from json
 type Student struct {
     Name        string  `json:"name"`
     Id          int  `json:"id"`

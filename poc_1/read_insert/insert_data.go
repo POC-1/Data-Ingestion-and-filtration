@@ -14,6 +14,7 @@ import (
 	)
 	
 
+// Insert data logic for elasticsearch
 func Insert_data(docs []string){
 	// Load Config variables
     config, err := util.LoadConfig(".")
