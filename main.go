@@ -90,6 +90,6 @@ func main() {
 		read := es_services.ConstructQuery(query)
 		es_services.CallQuery(es_client, read, ctx) //Print results
 
-	} //End of while loop
+	} //End of loop
 
 }
