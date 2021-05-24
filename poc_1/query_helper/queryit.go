@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"log"
 	"encoding/json"
-    "github.com/POC1/poc_1/util"
-    elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
-    // "github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/POC1/poc_1/go_elastic"
+	"github.com/POC1/poc_1/util"
     "context"
     "reflect"
 	"strings"
@@ -15,41 +14,11 @@ import (
 // Logic for querying in elasticsearch
 func Makequery(read *strings.Reader) {
 
-	// Load Config variables
-	config, err := util.LoadConfig(".")
-	if err != nil {
-		// log.Fatal("Cannot load config: ", err)
-		log.Println("Cannot load config: ", err)
-	}
+	// Create coonection and get client
+	client:= go_elastic.GetClient()
 		
 	// Create a context object for the API calls
     ctx := context.Background()
-
-    // Declare an Elasticsearch configuration
-    cfg := elasticsearch7.Config{
-        Addresses: []string{
-            config.ELASTICSEARCH_URL,
-        },
-        // Username: config.USERNAME,
-        // Password: config.PASSWORD,
-    }
-
-    // Instantiate a new Elasticsearch client object instance
-    client, err := elasticsearch7.NewClient(cfg)
-
-    if err != nil {
-        log.Println("Elasticsearch connection error:", err)
-    }
-
-    // Have the client instance return a response
-    res, err := client.Info()
-
-    // Deserialize the response into a map.
-    if err != nil {
-        log.Fatalf("client.Info() ERROR:", err)
-    } else {
-        log.Printf("client response:", res)
-    }
 
 	// Instantiate a mapping interface for API response
 	var mapResp map[string]interface{}
@@ -57,6 +26,13 @@ func Makequery(read *strings.Reader) {
 	// Build the request body.
 	var buf bytes.Buffer
 
+	// Load Config variables
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		// log.Fatal("Cannot load config: ", err)
+		log.Println("Cannot load config: ", err)
+	}
+	
 	// Attempt to encode the JSON query and look for errors
 	if err := json.NewEncoder(&buf).Encode(read); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
