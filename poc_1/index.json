@@ -1,0 +1,44 @@
+{
+	"settings": {
+    	"number_of_shards": 1,
+    	"number_of_replicas": 1
+	},
+   "mappings": {
+       "properties": {
+         "name": {
+               "type": "text"
+         },
+         "id": {
+               "type": "integer"      
+         },
+         "address": {
+               "type": "nested",
+               "properties": {
+                    "street": {
+                        "type": "text"
+                    },
+                    "houseno": {
+                        "type": "integer"
+                    },
+                    "city": {
+                        "type": "text"
+                    }
+               }    
+         },
+          "dept" : {
+               "type": "text"
+         },
+         "contact" : {
+                "type": "nested",
+                "properties": {
+                        "primary": {
+                            "type": "long"
+                        },
+                        "secondary": {
+                            "type": "long"
+                        }
+                }    
+         }
+     }
+   }
+}
