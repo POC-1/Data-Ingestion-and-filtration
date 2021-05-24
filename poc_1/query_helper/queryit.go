@@ -1,7 +1,6 @@
 package query_helper
 
 import (
-    "fmt"
 	"bytes"
 	"log"
 	"encoding/json"
@@ -20,7 +19,7 @@ func Makequery(read *strings.Reader) {
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		// log.Fatal("Cannot load config: ", err)
-		fmt.Println("Cannot load config: ", err)
+		log.Println("Cannot load config: ", err)
 	}
 		
 	// Create a context object for the API calls
@@ -39,7 +38,7 @@ func Makequery(read *strings.Reader) {
     client, err := elasticsearch7.NewClient(cfg)
 
     if err != nil {
-        fmt.Println("Elasticsearch connection error:", err)
+        log.Println("Elasticsearch connection error:", err)
     }
 
     // Have the client instance return a response
@@ -64,8 +63,8 @@ func Makequery(read *strings.Reader) {
 	} else {
 		// Query is a valid JSON object 
 
-		fmt.Println("json.NewEncoder encoded query:", read)
-		fmt.Println()
+		log.Println("json.NewEncoder encoded query:", read)
+		log.Println()
 
 		// Pass the JSON query to the Golang client's Search() method
 		res, err := client.Search(
@@ -82,7 +81,7 @@ func Makequery(read *strings.Reader) {
 		
 		// If no errors are returned, parse esapi.Response object
 		} else {
-			fmt.Println("res TYPE:", reflect.TypeOf(res))
+			log.Println("res TYPE:", reflect.TypeOf(res))
 			
 			// Close the result body when the function call is complete
 			defer res.Body.Close()
@@ -100,13 +99,13 @@ func Makequery(read *strings.Reader) {
 					
 					// The "_source" data is another map interface nested inside of doc
 					source := doc["_source"]
-					fmt.Println("doc _source:", reflect.TypeOf(source))
+					log.Println("doc _source:", reflect.TypeOf(source))
 					
 					// Get the document's _id and print it out along with _source data
 					docID := doc["_id"]
-					fmt.Println("docID:", docID)
-					fmt.Println("_source:", source)
-					fmt.Println()
+					log.Println("docID:", docID)
+					log.Println("_source:", source)
+					log.Println()
 				} // end of response iteration
 				
 			}

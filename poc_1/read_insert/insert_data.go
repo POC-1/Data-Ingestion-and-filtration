@@ -20,7 +20,7 @@ func Insert_data(docs []string){
     config, err := util.LoadConfig(".")
     if err != nil {
         // log.Fatal("Cannot load config: ", err)
-        fmt.Println("Cannot load config: ", err)
+        log.Fatalln("Cannot load config: ", err)
     }
 
     // Create a context object for the API calls
@@ -30,8 +30,8 @@ func Insert_data(docs []string){
     var (
         docMap map[string]interface{}
     )
-    fmt.Println("docMap:", docMap)
-    fmt.Println("docMap TYPE:", reflect.TypeOf(docMap))
+    log.Println("docMap:", docMap)
+    log.Println("docMap TYPE:", reflect.TypeOf(docMap))
 
     // Declare an Elasticsearch configuration
     cfg := elasticsearch7.Config{
@@ -44,7 +44,7 @@ func Insert_data(docs []string){
     client, err := elasticsearch7.NewClient(cfg)
 
     if err != nil {
-        fmt.Println("Elasticsearch connection error:", err)
+        log.Fatalln("Elasticsearch connection error:", err)
     }
 
     // Have the client instance return a response
@@ -60,8 +60,8 @@ func Insert_data(docs []string){
 	// Iterate on docs and insert records in elastic
 	for i, bod := range docs {
 
-		fmt.Println("\nDOC _id:", i+1)
-		fmt.Println(bod)
+		log.Println("\nDOC _id:", i+1)
+		log.Println(bod)
 
 		// Instantiate a request object 
 		req := esapi.IndexRequest{
@@ -70,7 +70,7 @@ func Insert_data(docs []string){
 			Body:       strings.NewReader(bod),
 			Refresh:    "true",
 		}
-		fmt.Println(reflect.TypeOf(req))
+		log.Println(reflect.TypeOf(req))
 
 		// Return an API response object from request
 		res, err := req.Do(ctx, client)
@@ -90,11 +90,11 @@ func Insert_data(docs []string){
 			} else {
 				log.Printf("\nIndexRequest() RESPONSE:")
 				// Print the response status and indexed document version.
-				fmt.Println("Status:", res.Status())
-				fmt.Println("Result:", resMap["result"])
-				fmt.Println("Version:", int(resMap["_version"].(float64)))
-				fmt.Println("resMap:", resMap)
-				fmt.Println()
+				log.Println("Status:", res.Status())
+				log.Println("Result:", resMap["result"])
+				log.Println("Version:", int(resMap["_version"].(float64)))
+				log.Println("resMap:", resMap)
+				log.Println()
 			
 			}
 		}

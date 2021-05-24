@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"strings"
 	"strconv"
+	"log"
 	)
 	
 // Asks for size of documents to get as result
 func Get_resultsize() int{
-	fmt.Println("Enter no of allowed documents to get: ")
+	log.Println("Enter no of allowed documents to get: ")
 	var size_expected int
 	fmt.Scanln(&size_expected)
-	fmt.Print("Query selected : " + strconv.Itoa(size_expected) + "\n")
+	log.Print("Query selected : " + strconv.Itoa(size_expected) + "\n")
 	return size_expected
 }
 
@@ -40,18 +41,18 @@ func ConstructQuery(q string, size int, score int) *strings.Reader {
 	
 	// Use the strconv.Itoa() method to convert int to string
 	query = query + `}, "size": ` + strconv.Itoa(size) + `}`
-	fmt.Println("\nquery:", query)
+	log.Println("\nquery:", query)
 	
 	// Check for JSON errors
 	isValid := json.Valid([]byte(query)) // returns bool
 	
 	// Default query is "{}" if JSON is invalid
 	if isValid == false {
-	fmt.Println("constructQuery() ERROR: query string not valid:", query)
-	fmt.Println("Using default match_all query")
+	log.Println("constructQuery() ERROR: query string not valid:", query)
+	log.Println("Using default match_all query")
 	query = "{}"
 	} else {
-	fmt.Println("constructQuery() valid JSON:", isValid)
+		log.Println("constructQuery() valid JSON:", isValid)
 	}
 		
 	return makeReader(query)
@@ -77,18 +78,18 @@ func ConstructNestedQuery() *strings.Reader {
 			}
 		  }`
 
-		fmt.Println("\nquery:", query)
+		  log.Println("\nquery:", query)
 		
 		// Check for JSON errors
 		isValid := json.Valid([]byte(query)) // returns bool
 		
 		// Default query is "{}" if JSON is invalid
 		if isValid == false {
-		fmt.Println("constructQuery() ERROR: query string not valid:", query)
-		fmt.Println("Using default match_all query")
+		log.Println("constructQuery() ERROR: query string not valid:", query)
+		log.Println("Using default match_all query")
 		query = "{}"
 		} else {
-		fmt.Println("constructQuery() valid JSON:", isValid)
+			log.Println("constructQuery() valid JSON:", isValid)
 		}
 			
 		return makeReader(query)

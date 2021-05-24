@@ -1,7 +1,8 @@
 package read_insert
 
 import (
-    "fmt"
+	"fmt"
+	"log"
     "os"
     "encoding/json"
 	"io/ioutil"
@@ -11,25 +12,24 @@ import (
 	
 // convert json file data to byte[]
 func Getfilejson() []byte {
-	fmt.Println("Enter file path: ")
+	log.Println("Enter file path: ")
 	var input_path_json string
 
 	fmt.Scanln(&input_path_json)
-	fmt.Print("path for the file : " + input_path_json + "\n")
+	log.Print("path for the file : " + input_path_json + "\n")
 
 	// check if its json or not
 	jsonData, err := os.Open(input_path_json)
 	if err!= nil {
-		fmt.Println(err)
-		os.Exit(3)
+		log.Fatalln(err)
 	}
 	
 	defer jsonData.Close()
+	
 	byteValue, _ := ioutil.ReadAll(jsonData)
 
     if !json.Valid(byteValue) {
-		fmt.Println("Json file invalid")
-		os.Exit(3)
+		log.Fatalln("Json file invalid")
 	}
 	return byteValue
 }
@@ -38,15 +38,15 @@ func Getfilejson() []byte {
 func Printstudents_docs(students []models.Student) {
 	// Print student data
 	for i := 0; i < len(students); i++ {
-		fmt.Println("\nStudent Name: " + students[i].Name)
-		fmt.Println("Student Id: " + strconv.Itoa(students[i].Id))
-		fmt.Println("Student Address street: " + students[i].Address.Street)
-		fmt.Println("Student Address house no: " + strconv.Itoa(students[i].Address.Houseno))
-		fmt.Println("Student Address city: " + students[i].Address.City)
-		fmt.Println("Student Dept: " + students[i].Dept)
-		fmt.Println("Student Contact Primary: " + strconv.Itoa(students[i].Contact.Primary))
-		fmt.Println("Student Contact Secondary: " + strconv.Itoa(students[i].Contact.Secondary))
-		fmt.Println()
+		log.Println("\nStudent Name: " + students[i].Name)
+		log.Println("Student Id: " + strconv.Itoa(students[i].Id))
+		log.Println("Student Address street: " + students[i].Address.Street)
+		log.Println("Student Address house no: " + strconv.Itoa(students[i].Address.Houseno))
+		log.Println("Student Address city: " + students[i].Address.City)
+		log.Println("Student Dept: " + students[i].Dept)
+		log.Println("Student Contact Primary: " + strconv.Itoa(students[i].Contact.Primary))
+		log.Println("Student Contact Secondary: " + strconv.Itoa(students[i].Contact.Secondary))
+		log.Println()
 	}
 }
 
@@ -60,7 +60,7 @@ func Getdata_array(students []models.Student) []string{
         // Marshal the struct to JSON and check for errors
         b, err := json.Marshal(students[i])
         if err != nil {
-            fmt.Println("json.Marshal ERROR:", err)
+            log.Fatalln("json.Marshal ERROR:", err)
             // string(err.Error())
         }
         

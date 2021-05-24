@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
-
 	"github.com/POC1/poc_1/models"
 	"github.com/POC1/poc_1/query_helper"
 	"github.com/POC1/poc_1/read_insert"
@@ -36,18 +34,17 @@ func main() {
 
 	var i int = 1
 	for i > 0 { // Get query choice
-		fmt.Println("Enter Your Choice: \n1. Filter students belonging to a city,'Pune' \n2. Filter students with dept as 'Computer Science' \n3. Filter students with dept as 'Computer Application' \n4. Filter students with dept containing 'Computer' \n5. END ")
+		log.Println("Enter Your Choice: \n1. Filter students belonging to a city,'Pune' \n2. Filter students with dept as 'Computer Science' \n3. Filter students with dept as 'Computer Application' \n4. Filter students with dept containing 'Computer' \n5. END ")
 		var input_query_type int
 
 		fmt.Scanln(&input_query_type)
-		fmt.Print("Query selected : " + strconv.Itoa(input_query_type) + "\n")
+		log.Print("Query selected : " + strconv.Itoa(input_query_type) + "\n")
 
 		var query = ``
 		var score = 1
 		read := strings.NewReader("")
 		switch input_query_type {
 		case 1:
-			query = `"match" : {"dept": "Computer Science"}`
 			read = query_helper.ConstructNestedQuery()
 		case 2:
 			query = `"match" : {"dept": "Computer Science"}`
@@ -62,16 +59,14 @@ func main() {
 			score = 0
 			read = query_helper.ConstructQuery(query, query_helper.Get_resultsize(), score)
 		case 5:
-			fmt.Print("ENDING..... ")
-			os.Exit(3)
+			log.Fatalln("ENDING..... ")
 		default:
-			fmt.Print("Wrong Input!! ")
-			os.Exit(3)
+			log.Fatalln("Wrong Input!! ")
 		}
 
-		// fmt.Println("read:", read)
-		fmt.Println("read TYPE:", reflect.TypeOf(read))
-		// fmt.Println("JSON encoding:", json.NewEncoder(&buf).Encode(read))
+		// log.Println("read:", read)
+		log.Println("read TYPE:", reflect.TypeOf(read))
+		// log.Println("JSON encoding:", json.NewEncoder(&buf).Encode(read))
 
 		// Call Query Function
 		query_helper.Makequery(read)
