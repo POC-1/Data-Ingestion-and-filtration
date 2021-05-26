@@ -4,7 +4,6 @@ import (
 	"POC1/layout" //Package for Database Structure
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"reflect"
 	"strconv"
@@ -23,7 +22,7 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 		// Marshal the struct to JSON and check for errors
 		b, err := json.Marshal(students[i])
 		if err != nil {
-			fmt.Println("json.Marshal ERROR:", err)
+			log.Println("json.Marshal ERROR:", err)
 		}
 
 		docs = append(docs, string(b))
@@ -32,8 +31,8 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 
 	for i, bod := range docs {
 
-		fmt.Println("\nDOC _id:", i+1)
-		fmt.Println(bod)
+		log.Println("\nDOC _id:", i+1)
+		log.Println(bod)
 
 		// Instantiate a request object
 		req := esapi.IndexRequest{
@@ -42,7 +41,7 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 			Body:       strings.NewReader(bod),
 			Refresh:    "true",
 		}
-		fmt.Println(reflect.TypeOf(req))
+		log.Println(reflect.TypeOf(req))
 
 		// Return an API response object from request
 		res, err := req.Do(ctx, client)
@@ -50,7 +49,7 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 			log.Fatalf("IndexRequest ERROR: %s", err)
 		}
 		defer res.Body.Close()
-		fmt.Printf("res val %s", res)
+		log.Printf("res val %s", res)
 		if res.IsError() {
 			log.Printf("%s ERROR indexing document ID=%d", res.Status(), i+1)
 		} else {
@@ -62,11 +61,11 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 			} else {
 				log.Printf("\nIndexRequest() RESPONSE:")
 				// Print the response status and indexed document version.
-				fmt.Println("Status:", res.Status())
-				fmt.Println("Result:", resMap["result"])
-				fmt.Println("Version:", int(resMap["_version"].(float64)))
-				fmt.Println("resMap:", resMap)
-				fmt.Println()
+				log.Println("Status:", res.Status())
+				log.Println("Result:", resMap["result"])
+				log.Println("Version:", int(resMap["_version"].(float64)))
+				log.Println("resMap:", resMap)
+				log.Println()
 
 			}
 		}

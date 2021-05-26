@@ -2,7 +2,7 @@ package elasticsearch_services
 
 import (
 	"POC1/util" ////Package for setting up Config
-	"fmt"
+	"log"
 	"os"
 
 	elastic_search "github.com/elastic/go-elasticsearch/v7"
@@ -12,7 +12,7 @@ func SetClient() *elastic_search.Client {
 
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		fmt.Println("Cannot load config: ", err)
+		log.Println("Cannot load config: ", err)
 		os.Exit(3)
 	}
 
@@ -29,17 +29,17 @@ func SetClient() *elastic_search.Client {
 	client, err := elastic_search.NewClient(cfg)
 
 	if err != nil {
-		fmt.Println("Elasticsearch connection error:", err)
+		log.Println("Elasticsearch connection error:", err)
 	}
 	// Have the client instance return a response
 	res, err := client.Info()
 
 	// Deserialize the response into a map.
 	if err != nil {
-		fmt.Println("client.Info() ERROR:", err)
+		log.Println("client.Info() ERROR:", err)
 		os.Exit(3)
 	} else {
-		fmt.Println("client response:", res)
+		log.Println("client response:", res)
 	}
 	return client
 }

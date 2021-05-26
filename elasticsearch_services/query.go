@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"reflect"
@@ -19,11 +18,11 @@ func ConstructQuery(query string) *strings.Reader {
 
 	// Default query is "{}" if JSON is invalid
 	if isValid == false {
-		fmt.Println("constructQuery() ERROR: query string not valid:", query)
-		fmt.Println("Using default match_all query")
+		log.Println("constructQuery() ERROR: query string not valid:", query)
+		log.Println("Using default match_all query")
 		query = "{}"
 	} else {
-		fmt.Println("constructQuery() valid JSON:", isValid)
+		log.Println("constructQuery() valid JSON:", isValid)
 	}
 	// Build a new string from JSON query
 	var b strings.Builder
@@ -46,7 +45,7 @@ func CallQuery(client *elastic_search.Client, read *strings.Reader, ctx context.
 		log.Println("json.NewEncoder() ERROR:", err)
 		os.Exit(3)
 	} else {
-		fmt.Println("json.NewEncoder encoded query:", read)
+		log.Println("json.NewEncoder encoded query:", read)
 
 		// Pass the JSON query to the Golang client's Search() method
 		res, err := client.Search(
@@ -63,7 +62,7 @@ func CallQuery(client *elastic_search.Client, read *strings.Reader, ctx context.
 
 			// If no errors are returned, parse esapi.Response object
 		} else {
-			fmt.Println("res TYPE:", reflect.TypeOf(res))
+			log.Println("res TYPE:", reflect.TypeOf(res))
 
 			// Close the result body when the function call is complete
 			defer res.Body.Close()
@@ -78,21 +77,21 @@ func CallQuery(client *elastic_search.Client, read *strings.Reader, ctx context.
 
 					// The "_source" data is another map interface nested inside of doc
 					source := doc["_source"]
-					//fmt.Println("doc _source:", reflect.TypeOf(source))
+					//log.Println("doc _source:", reflect.TypeOf(source))
 
 					// Get the document's _id and print it out along with _source data
 					docID := doc["_id"]
-					fmt.Println("docID:", docID)
-					fmt.Println("_source:", source)
+					log.Println("docID:", docID)
+					log.Println("_source:", source)
 					val := source.(map[string]interface{})
-					fmt.Println("ID :", val["id"])
-					fmt.Println("Name :", val["name"])
-					fmt.Println("Department :", val["dept"])
-					fmt.Println("Address:", val["address"])
-					fmt.Println("Contact :", val["contact"])
+					log.Println("ID :", val["id"])
+					log.Println("Name :", val["name"])
+					log.Println("Department :", val["dept"])
+					log.Println("Address:", val["address"])
+					log.Println("Contact :", val["contact"])
 
-					fmt.Println()
-					fmt.Println()
+					log.Println()
+					log.Println()
 				} // end of response iteration
 			}
 		}

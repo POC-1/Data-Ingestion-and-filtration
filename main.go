@@ -6,6 +6,7 @@ import (
 	"POC1/setup"                              //Package for reading & printing Json file
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -26,12 +27,12 @@ func main() {
 	var i int = 1
 	for i > 0 {
 
-		fmt.Println("Enter your choice :\n1.Find students belonging to the city 'Pune'")
-		fmt.Println("2.Find students belonging to the department 'Computer Science'")
-		fmt.Println("3.Find students belonging to the department 'Computer Application'")
-		fmt.Println("4.Find students with department containing 'Computer' ")
-		fmt.Println("5.Display all students ")
-		fmt.Println("6.Exit")
+		log.Println("Enter your choice :\n1.Find students belonging to the city 'Pune'")
+		log.Println("2.Find students belonging to the department 'Computer Science'")
+		log.Println("3.Find students belonging to the department 'Computer Application'")
+		log.Println("4.Find students with department containing 'Computer' ")
+		log.Println("5.Display all students ")
+		log.Println("6.Exit")
 
 		switch fmt.Scanln(&ch); ch {
 		case 1:
@@ -79,11 +80,11 @@ func main() {
 			  }`
 
 		case 6:
-			fmt.Println("Exiting...")
+			log.Println("Exiting...")
 			os.Exit(3)
 
 		default:
-			fmt.Println("Invalid choice")
+			log.Println("Invalid choice")
 		}
 
 		// Pass the query string to the function and have it return a Reader object
