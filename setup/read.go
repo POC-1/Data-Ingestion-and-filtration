@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"POC1/layout"
+	"POC1/layout" //Package for Database layout
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

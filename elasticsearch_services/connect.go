@@ -1,7 +1,7 @@
 package elasticsearch_services
 
 import (
-	"POC1/util"
+	"POC1/util" ////Package for setting up Config
 	"fmt"
 	"os"
 

@@ -1,7 +1,7 @@
 package elasticsearch_services
 
 import (
-	"POC1/layout"
+	"POC1/layout" //Package for Database Structure
 	"context"
 	"encoding/json"
 	"fmt"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	es_services "POC1/elasticsearch_services"
-	"POC1/layout"
-	"POC1/setup"
+	es_services "POC1/elasticsearch_services" //Package for Elastic Services
+	"POC1/layout"                             //Package for Database Structure
+	"POC1/setup"                              //Package for reading & printing Json file
 	"encoding/json"
 	"fmt"
 	"os"
