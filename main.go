@@ -4,6 +4,7 @@ import (
 	es_services "POC1/elasticsearch_services" //Package for Elastic Services
 	"POC1/layout"                             //Package for Database Structure
 	"POC1/setup"                              //Package for reading & printing Json file
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,8 +12,13 @@ import (
 )
 
 func main() {
-
-	byteValue := setup.GetJsonByteVal() //Read and Verify Json File
+	var filePath string
+	log.Println("Enter json file path :")
+	fmt.Scanln(&filePath)
+	byteValue := setup.GetJsonByteVal(filePath) //Read and Verify Json File
+	if bytes.Compare(byteValue, []byte("")) == 0 {
+		os.Exit(3)
+	} //Check if it is a valid byte format
 
 	var students []layout.Student
 	json.Unmarshal(byteValue, &students)
@@ -89,6 +95,9 @@ func main() {
 
 		// Pass the query string to the function and have it return a Reader object
 		read := es_services.ConstructQuery(query)
+		if ch == 0 {
+			log.Println("Using default match_all query")
+		}
 		es_services.CallQuery(es_client, read, ctx) //Print results
 
 	} //End of loop

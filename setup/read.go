@@ -3,28 +3,24 @@ package setup
 import (
 	"POC1/layout" //Package for Database layout
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 )
 
-func GetJsonByteVal() []byte {
-	var filePath string
-	log.Println("Enter json file path :")
-	fmt.Scanln(&filePath)
+func GetJsonByteVal(filePath string) []byte {
 	jsonFile, err := os.Open(filePath)
 	if err != nil {
 		log.Println(err)
-		os.Exit(3)
+		return []byte("")
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	if !json.Valid(byteValue) {
 		log.Println("Json file invalid")
-		os.Exit(3)
+		return []byte("")
 	}
 	log.Println("Successfully Opened users.json")
 	defer jsonFile.Close()
