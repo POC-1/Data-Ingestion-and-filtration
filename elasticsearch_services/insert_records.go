@@ -14,7 +14,8 @@ import (
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 )
 
-func InsertRecords(students []layout.Student, client *elastic_search.Client) context.Context {
+func get_arraydata(students []layout.Student) []string {
+	print(students)
 	// Declare empty array for the document strings
 	var docs []string
 
@@ -27,6 +28,13 @@ func InsertRecords(students []layout.Student, client *elastic_search.Client) con
 
 		docs = append(docs, string(b))
 	}
+	return docs
+}
+
+func InsertRecords(students []layout.Student, client *elastic_search.Client) context.Context {
+
+	docs := get_arraydata(students)
+
 	ctx := context.Background()
 
 	for i, bod := range docs {

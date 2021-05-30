@@ -19,7 +19,6 @@ func ConstructQuery(query string) *strings.Reader {
 	// Default query is "{}" if JSON is invalid
 	if isValid == false {
 		log.Println("constructQuery() ERROR: query string not valid:", query)
-		log.Println("Using default match_all query")
 		query = "{}"
 	} else {
 		log.Println("constructQuery() valid JSON:", isValid)
