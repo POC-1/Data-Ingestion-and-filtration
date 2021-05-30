@@ -1,7 +1,7 @@
 package read_insert
 
 import (
-	"fmt"
+	// "fmt"
 	"log"
     "os"
     "encoding/json"
@@ -11,17 +11,13 @@ import (
 	)
 	
 // convert json file data to byte[]
-func Getfilejson() []byte {
-	log.Println("Enter file path: ")
-	var input_path_json string
-
-	fmt.Scanln(&input_path_json)
-	log.Print("path for the file : " + input_path_json + "\n")
+func Getfilejson(input_path_json string) []byte {
 
 	// check if its json or not
 	jsonData, err := os.Open(input_path_json)
 	if err!= nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return []byte("")
 	}
 	
 	defer jsonData.Close()
@@ -29,7 +25,8 @@ func Getfilejson() []byte {
 	byteValue, _ := ioutil.ReadAll(jsonData)
 
     if !json.Valid(byteValue) {
-		log.Fatalln("Json file invalid")
+		log.Println("Json file invalid")
+		return []byte("")
 	}
 	return byteValue
 }

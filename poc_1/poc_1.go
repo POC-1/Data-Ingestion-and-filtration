@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
+	"bytes"
 	"strings"
 	"github.com/POC1/poc_1/models"
 	"github.com/POC1/poc_1/query_helper"
@@ -17,8 +19,17 @@ func main() {
 	// Allow for custom formatting of log output
 	log.SetFlags(0)
 
+	log.Println("Enter file path: ")
+	var input_path_json string
+
+	fmt.Scanln(&input_path_json)
+	log.Print("path for the file : " + input_path_json + "\n")
+
 	// Get file path from user and check if it is json
-	byteValue := read_insert.Getfilejson()
+	byteValue := read_insert.Getfilejson(input_path_json)
+	if bytes.Compare(byteValue, []byte("")) == 0 {
+		os.Exit(3)
+	} //Check if it is a valid byte format
 
 	var students []models.Student
 	json.Unmarshal(byteValue, &students)

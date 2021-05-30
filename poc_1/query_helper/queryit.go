@@ -53,7 +53,7 @@ func Makequery(read *strings.Reader) {
 
 		// Check for any errors returned by API call to Elasticsearch
 		if err != nil {
-		log.Fatalf("Elasticsearch Search() API ERROR:", err)
+		log.Fatal("Elasticsearch Search() API ERROR:", err)
 		
 		// If no errors are returned, parse esapi.Response object
 		} else {
